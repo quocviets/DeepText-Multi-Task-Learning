@@ -318,14 +318,21 @@ class ModelService:
     def get_model_info(self) -> Dict:
         """Lấy thông tin về model"""
         if self.model is None:
-            return {"status": "Model chưa được load"}
+            return {
+                "status": "Model chưa được load",
+                "emotion_classes": self.emotion_classes,
+                "hate_classes": self.hate_classes,
+                "violence_classes": self.violence_classes,
+                "max_length": self.max_len,
+                "vocab_size": self.max_words
+            }
         
         return {
             "status": "Model đã được load",
             "model_path": self.model_path,
-            "input_shape": str(self.model.input_shape),
-            "outputs": len(self.model.outputs),
-            "total_params": self.model.count_params(),
+            "input_shape": str(self.model.input_shape) if self.model.input_shape else "Unknown",
+            "outputs": len(self.model.outputs) if self.model.outputs else 0,
+            "total_params": self.model.count_params() if hasattr(self.model, 'count_params') else 0,
             "emotion_classes": self.emotion_classes,
             "hate_classes": self.hate_classes,
             "violence_classes": self.violence_classes,

@@ -523,30 +523,37 @@ def main():
     with tab3:
         st.header("Visualizations & Analytics")
         
-        if st.session_state.model_loaded:
-            model_info = st.session_state.model_service.get_model_info()
-            
-            st.subheader("📊 Model Information")
-            st.json(model_info)
-            
-            st.subheader("📈 Task Configuration")
-            
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.markdown("**🎭 Emotion Classes**")
-                for i, cls in enumerate(model_info['emotion_classes'], 1):
-                    st.write(f"{i}. {cls}")
-            
-            with col2:
-                st.markdown("**😡 Hate Classes**")
-                for i, cls in enumerate(model_info['hate_classes'], 1):
-                    st.write(f"{i}. {cls}")
-            
-            with col3:
-                st.markdown("**⚔️ Violence Classes**")
-                for i, cls in enumerate(model_info['violence_classes'], 1):
-                    st.write(f"{i}. {cls}")
+        if st.session_state.model_loaded and st.session_state.model_service:
+            try:
+                model_info = st.session_state.model_service.get_model_info()
+                
+                st.subheader("📊 Model Information")
+                st.json(model_info)
+                
+                st.subheader("📈 Task Configuration")
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.markdown("**🎭 Emotion Classes**")
+                    emotion_classes = model_info.get('emotion_classes', ['sad', 'joy', 'love', 'angry', 'fear', 'surprise', 'no_emo'])
+                    for i, cls in enumerate(emotion_classes, 1):
+                        st.write(f"{i}. {cls}")
+                
+                with col2:
+                    st.markdown("**😡 Hate Classes**")
+                    hate_classes = model_info.get('hate_classes', ['hate', 'offensive', 'neutral'])
+                    for i, cls in enumerate(hate_classes, 1):
+                        st.write(f"{i}. {cls}")
+                
+                with col3:
+                    st.markdown("**⚔️ Violence Classes**")
+                    violence_classes = model_info.get('violence_classes', ['sex_viol', 'phys_viol', 'no_viol'])
+                    for i, cls in enumerate(violence_classes, 1):
+                        st.write(f"{i}. {cls}")
+            except Exception as e:
+                st.error(f"❌ Lỗi khi lấy thông tin model: {str(e)}")
+                st.info("💡 Vui lòng thử load lại model")
         else:
             st.info("Vui lòng load model để xem thông tin")
     
