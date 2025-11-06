@@ -1,0 +1,61 @@
+{
+  "model": {
+    "vocab_size": 10000,
+    "max_length": 100,
+    "embedding_dim": 128,
+    "lstm_units": 64,
+    "dropout_rate": 0.3,
+    "use_attention": true,
+    "use_batch_norm": true,
+    "use_pretrained_embedding": false,
+    "emotion_classes": ["sad", "joy", "love", "angry", "fear", "surprise", "no_emo"],
+    "hate_classes": ["hate", "offensive", "neutral"],
+    "violence_classes": ["sex_viol", "phys_viol", "no_viol"]
+  },
+  "data": {
+    "min_word_count": 2,
+    "remove_punctuation": true,
+    "lowercase": true,
+    "raw_data_dir": "data/raw",
+    "processed_data_dir": "data/processed",
+    "text_column": "text",
+    "label_columns": ["emotion", "hate", "violence"]
+  },
+  "training": {
+    "checkpoints_dir": "checkpoints",
+    "logs_dir": "logs",
+    "reports_dir": "reports",
+    "early_stopping_patience": 10,
+    "early_stopping_min_delta": 0.001,
+    "reduce_lr_patience": 5,
+    "reduce_lr_factor": 0.5,
+    "reduce_lr_min_lr": 1e-7,
+    "monitor_metric": "val_loss",
+    "monitor_mode": "min",
+    "verbose": 1,
+    "save_freq": "epoch"
+  },
+  "evaluation": {
+    "confusion_matrices_dir": "reports/confusion_matrices",
+    "roc_curves_dir": "reports/roc_curves",
+    "precision_recall_curves_dir": "reports/precision_recall_curves",
+    "confidence_threshold": 0.5,
+    "save_predictions": true,
+    "save_probabilities": false,
+    "figsize": [10, 8],
+    "dpi": 300,
+    "style": "seaborn-v0_8",
+    "palette": "husl"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

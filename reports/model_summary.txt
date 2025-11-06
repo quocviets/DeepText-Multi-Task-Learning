@@ -1,0 +1,127 @@
+================================================================================
+                    DEEPTEXT MULTI-TASK CLASSIFIER ARCHITECTURE
+================================================================================
+
+INPUT LAYER
+    ┌─────────────────────────────────────────────────────────────┐
+    │                    Text Input                              │
+    │              (batch_size, max_length)                     │
+    │              (batch_size, 100)                            │
+    └─────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                SHARED EMBEDDING LAYER                      │
+    │              (vocab_size → embedding_dim)                 │
+    │              (10,000 → 128)                               │
+    │              Output: (batch_size, 100, 128)               │
+    └─────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                SHARED BILSTM LAYER                         │
+    │              (Bidirectional LSTM)                          │
+    │              LSTM Units: 64                                │
+    │              Output: (batch_size, 128)                     │
+    └─────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                SHARED DENSE LAYER                          │
+    │              Dense Units: 128                              │
+    │              Activation: ReLU                               │
+    │              Output: (batch_size, 128)                     │
+    └─────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                SHARED DROPOUT LAYER                        │
+    │              Dropout Rate: 0.3                             │
+    │              Output: (batch_size, 128)                     │
+    └─────────────────────┬───────────────────────────────────────┘
+                          │
+                    ┌─────┼─────┐
+                    │     │     │
+                    ▼     ▼     ▼
+    ┌─────────────────┐ ┌─────────────┐ ┌─────────────────┐
+    │  EMOTION HEAD   │ │ HATE HEAD   │ │ VIOLENCE HEAD   │
+    │                 │ │             │ │                 │
+    │ Dense: 64       │ │ Dense: 32   │ │ Dense: 32       │
+    │ ReLU            │ │ ReLU        │ │ ReLU            │
+    │                 │ │             │ │                 │
+    │ Dropout: 0.3    │ │ Dropout: 0.3│ │ Dropout: 0.3    │
+    │                 │ │             │ │                 │
+    │ Dense: 7        │ │ Dense: 3    │ │ Dense: 3        │
+    │ Softmax         │ │ Softmax     │ │ Softmax         │
+    │                 │ │             │ │                 │
+    │ Output:         │ │ Output:     │ │ Output:         │
+    │ (batch, 7)      │ │ (batch, 3)  │ │ (batch, 3)      │
+    └─────────────────┘ └─────────────┘ └─────────────────┘
+
+================================================================================
+                              TASK CONFIGURATIONS
+================================================================================
+
+EMOTION CLASSIFICATION (7 classes):
+    - sad, joy, love, angry, fear, surprise, no_emo
+    - Loss: Categorical Crossentropy
+    - Weight: 1.0
+
+HATE SPEECH DETECTION (3 classes):
+    - hate, offensive, neutral
+    - Loss: Categorical Crossentropy
+    - Weight: 1.0
+
+VIOLENCE DETECTION (3 classes):
+    - sex_viol, phys_viol, no_viol
+    - Loss: Categorical Crossentropy
+    - Weight: 1.0
+
+================================================================================
+                              MODEL STATISTICS
+================================================================================
+
+Total Parameters: 1,412,493 (5.39 MB)
+Trainable Parameters: 1,412,493
+Non-trainable Parameters: 0
+
+Layer Breakdown:
+- Embedding: 1,280,000 parameters (90.6%)
+- Shared BiLSTM: 98,816 parameters (7.0%)
+- Shared Dense: 16,512 parameters (1.2%)
+- Task Heads: 17,165 parameters (1.2%)
+
+================================================================================
+                              TRAINING CONFIGURATION
+================================================================================
+
+Optimizer: Adam (learning_rate=0.001)
+Loss Function: Multi-task weighted sum
+    - emotion_output: categorical_crossentropy (weight: 1.0)
+    - hate_output: categorical_crossentropy (weight: 1.0)
+    - violence_output: categorical_crossentropy (weight: 1.0)
+
+Metrics:
+    - accuracy
+    - top_k_categorical_accuracy
+
+Callbacks:
+    - EarlyStopping (patience=5)
+    - ReduceLROnPlateau (factor=0.5, patience=3)
+    - ModelCheckpoint (save_best_only=True)
+
+================================================================================
+                              DATA FLOW
+================================================================================
+
+1. Input Text → Tokenization → (batch_size, 100)
+2. Embedding → (batch_size, 100, 128)
+3. BiLSTM → (batch_size, 128)
+4. Shared Dense → (batch_size, 128)
+5. Shared Dropout → (batch_size, 128)
+6. Task-Specific Processing:
+   - Emotion: 128 → 64 → 7 (softmax)
+   - Hate: 128 → 32 → 3 (softmax)
+   - Violence: 128 → 32 → 3 (softmax)
+
+================================================================================
