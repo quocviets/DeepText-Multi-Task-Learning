@@ -64,22 +64,102 @@ if 'model_loaded' not in st.session_state:
     st.session_state.model_loaded = False
 if 'model_service' not in st.session_state:
     st.session_state.model_service = None
+if 'auto_load_attempted' not in st.session_state:
+    st.session_state.auto_load_attempted = False
 
+def auto_load_model():
+    """Tự động load model khi app khởi động"""
+    if st.session_state.model_loaded or st.session_state.auto_load_attempted:
+        return
+    
+    # Đường dẫn mặc định (từ root của repo trên Streamlit Cloud)
+    default_paths = {
+        'model': [
+            'checkpoints/models/best_model_20251027_085402.h5',
+            'DeepText-MTL/checkpoints/models/best_model_20251027_085402.h5',
+        ],
+        'config': [
+            'config_default.json',
+            'DeepText-MTL/config_default.json',
+        ],
+        'train_data': [
+            'checkpoints/train_clean.csv',
+            'DeepText-MTL/checkpoints/train_clean.csv',
+        ]
+    }
+    
+    # Tìm đường dẫn tồn tại
+    model_path = None
+    config_path = None
+    train_data_path = None
+    
+    for path in default_paths['model']:
+        if os.path.exists(path):
+            model_path = path
+            break
+    
+    for path in default_paths['config']:
+        if os.path.exists(path):
+            config_path = path
+            break
+    
+    for path in default_paths['train_data']:
+        if os.path.exists(path):
+            train_data_path = path
+            break
+    
+    # Nếu tìm thấy đủ model và training data, tự động load
+    if model_path and train_data_path:
+        try:
+            with st.spinner("🔄 Đang tự động load model... Vui lòng đợi..."):
+                st.session_state.model_service = get_model_service(
+                    model_path=model_path,
+                    config_path=config_path,
+                    train_data_path=train_data_path
+                )
+                st.session_state.model_loaded = True
+                st.session_state.auto_load_attempted = True
+                st.rerun()
+        except Exception as e:
+            st.session_state.auto_load_attempted = True
+            # Không hiển thị lỗi, để user tự load nếu cần
+    
 def load_model():
     """Load model vào session state"""
+    # Đường dẫn mặc định (tự động detect)
+    default_model_paths = [
+        'checkpoints/models/best_model_20251027_085402.h5',
+        'DeepText-MTL/checkpoints/models/best_model_20251027_085402.h5'
+    ]
+    
+    default_config_paths = [
+        'config_default.json',
+        'DeepText-MTL/config_default.json'
+    ]
+    
+    default_train_paths = [
+        'checkpoints/train_clean.csv',
+        'DeepText-MTL/checkpoints/train_clean.csv'
+    ]
+    
+    # Tìm đường dẫn tồn tại
+    default_model = next((p for p in default_model_paths if os.path.exists(p)), default_model_paths[0])
+    default_config = next((p for p in default_config_paths if os.path.exists(p)), default_config_paths[0])
+    default_train = next((p for p in default_train_paths if os.path.exists(p)), default_train_paths[0])
+    
     model_path = st.sidebar.text_input(
         "Đường dẫn Model",
-        value="DeepText-MTL/checkpoints/models/best_model_20251027_085402.h5"
+        value=default_model
     )
     
     config_path = st.sidebar.text_input(
         "Đường dẫn Config (optional)",
-        value="DeepText-MTL/config_default.json"
+        value=default_config
     )
     
     train_data_path = st.sidebar.text_input(
         "Đường dẫn Training Data (để fit tokenizer)",
-        value="DeepText-MTL/checkpoints/train_clean.csv"
+        value=default_train
     )
     
     if st.sidebar.button("🔄 Load Model", type="primary"):
@@ -129,6 +209,9 @@ def load_model():
 def main():
     """Main application"""
     
+    # Tự động load model khi khởi động (nếu chưa load)
+    auto_load_model()
+    
     # Header
     st.markdown('<h1 class="main-header">🤖 DeepText Multi-Task Learning</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Phân tích cảm xúc, phát hiện ngôn từ thù địch và bạo lực</p>', unsafe_allow_html=True)
@@ -136,7 +219,13 @@ def main():
     # Sidebar
     with st.sidebar:
         st.header("⚙️ Cấu hình")
-        load_model()
+        
+        # Hiển thị thông tin nếu đã auto-load
+        if st.session_state.model_loaded and st.session_state.auto_load_attempted:
+            st.success("✅ Model đã tự động load!")
+            st.caption("💡 Nếu cần load model khác, click Reset và nhập đường dẫn mới")
+        else:
+            load_model()
         
         if st.session_state.model_loaded:
             st.markdown("---")
