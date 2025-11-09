@@ -1,379 +1,270 @@
-# DeepText Multi-Task Learning System
+# DeepText Multi-Task Learning
 
-A comprehensive deep learning system for multi-task text classification, supporting emotion detection, hate speech detection, and violence detection in Vietnamese text.
+Hệ thống Deep Learning để phân tích văn bản tiếng Việt với 3 nhiệm vụ đồng thời:
+- **🎭 Phân loại cảm xúc** (7 classes)
+- **😡 Phát hiện ngôn từ thù địch** (3 classes)
+- **⚔️ Phát hiện bạo lực** (3 classes)
 
-## 🚀 Features
+## ✨ Tính năng
 
-- **Multi-Task Learning**: Simultaneously classify emotion, hate speech, and violence
-- **Advanced Architecture**: Shared embedding + BiLSTM + attention mechanism
-- **Optimized Training**: Batch normalization, class weighting, and advanced callbacks
-- **Comprehensive Evaluation**: Detailed metrics, confusion matrices, and visualizations
-- **Production Ready**: Complete pipeline from data preprocessing to model deployment
-- **Modular Design**: Clean, extensible codebase with proper separation of concerns
-
-## 📁 Project Structure
-
-```
-DeepText-MTL/
-│
-├── data/
-│   ├── raw/
-│   │   └── train_dataset.csv                # Original dataset
-│   └── processed/
-│       ├── train.pkl                        # Preprocessed data
-│       ├── val.pkl
-│       └── test.pkl
-│
-├── notebooks/
-│   ├── 01_data_exploration.ipynb            # EDA & statistics
-│   ├── 02_preprocessing.ipynb               # Data cleaning & encoding
-│   └── 03_train_experiments.ipynb           # Hyperparameter tuning
-│
-├── src/
-│   ├── data_preprocessing/
-│   │   └── preprocess_text.py               # Text preprocessing utilities
-│   ├── model/
-│   │   ├── deeptext_multitask.py            # Basic model implementation
-│   │   └── multi_task_model_optimized.py    # Optimized model with attention
-│   ├── training/
-│   │   ├── train.py                         # Training pipeline
-│   │   ├── evaluate.py                      # Model evaluation
-│   │   └── visualize.py                     # Training visualizations
-│   ├── utils/
-│   │   ├── metrics_utils.py                 # Custom metrics
-│   │   ├── plotting_utils.py                # Advanced plotting
-│   │   └── config.py                        # Configuration management
-│   └── main.py                              # Main entry point
-│
-├── checkpoints/
-│   └── multitask_best_*.h5                  # Model checkpoints
-│
-├── reports/
-│   ├── model_summary.txt
-│   ├── training_history.png
-│   ├── evaluation_results.json
-│   └── confusion_matrices/
-│
-├── requirements.txt
-├── run.sh                                   # Run script
-└── README.md
-```
-
-## 🛠️ Installation
-
-### Prerequisites
-
-- Python 3.8+
-- TensorFlow 2.8+
-- CUDA (optional, for GPU acceleration)
-
-### Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd DeepText-MTL
-   ```
-
-2. **Create virtual environment:**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Run setup script:**
-   ```bash
-   # On Linux/Mac
-   ./run.sh setup
-   
-   # On Windows
-   python src/main.py --mode train --data_path data/raw/train_dataset.csv
-   ```
+- ✅ Multi-Task Learning: Phân tích 3 nhiệm vụ đồng thời
+- ✅ Kiến trúc tối ưu: Shared Embedding + BiLSTM + Task-Specific Heads
+- ✅ Streamlit UI: Giao diện web đẹp, dễ sử dụng
+- ✅ Auto-load Model: Tự động load model khi khởi động
+- ✅ Batch Prediction: Hỗ trợ phân tích hàng loạt
+- ✅ Visualizations: Charts và metrics đẹp mắt
 
 ## 🚀 Quick Start
 
-### 1. Data Preparation
-
-Place your dataset in `data/raw/train_dataset.csv` with the following columns:
-- `text`: Input text
-- `emotion`: Emotion labels (sad, joy, love, angry, fear, surprise, no_emo)
-- `hate`: Hate speech labels (hate, offensive, neutral)
-- `violence`: Violence labels (sex_viol, phys_viol, no_viol)
-
-### 2. Run Full Pipeline
+### 1. Cài đặt
 
 ```bash
-# Complete pipeline (recommended)
-python src/main.py --mode full_pipeline --data_path data/raw/train_dataset.csv --output_dir output --epochs 50
+# Clone repository
+git clone https://github.com/quocviets/DeepText-Multi-Task-Learning.git
+cd DeepText-Multi-Task-Learning
 
-# Or use the run script
-./run.sh full
+# Cài đặt dependencies
+pip install -r requirements.txt
+pip install -r ui_app/requirements.txt
 ```
 
-### 3. Individual Steps
+### 2. Chạy Streamlit UI (Khuyến nghị)
 
 ```bash
-# Data exploration
-./run.sh explore
-
-# Data preprocessing
-./run.sh preprocess
-
-# Train model only
-./run.sh train
-
-# Evaluate model only
-./run.sh evaluate
+cd ui_app
+streamlit run app.py
 ```
 
-## 📊 Usage Examples
+Mở browser: http://localhost:8501
 
-### Basic Training
+**Tính năng UI:**
+- ✅ Tự động load model khi khởi động
+- ✅ Single text prediction với visualizations
+- ✅ Batch prediction từ CSV
+- ✅ Export kết quả
+- ✅ Modern UI với gradients và animations
+
+### 3. Sử dụng Model Service (Programmatic)
 
 ```python
-from src.model.multi_task_model_optimized import DeepTextMultiTaskClassifierOptimized
-from src.training.train import TrainingPipeline
-from src.data_preprocessing.preprocess_text import quick_process_data
+from ui_app.model_service import get_model_service
 
-# Process data
-data, preprocessor, processor = quick_process_data('data/raw/train_dataset.csv')
-
-# Create model
-model = DeepTextMultiTaskClassifierOptimized(
-    vocab_size=data['vocab_size'],
-    max_length=data['max_length'],
-    use_attention=True,
-    use_batch_norm=True
+# Load model service
+service = get_model_service(
+    model_path="checkpoints/models/best_model_20251027_085402.h5",
+    train_data_path="checkpoints/train_clean.csv"
 )
 
-# Build and compile
+# Single prediction
+result = service.predict("Tôi cảm thấy rất vui vẻ!")
+print(result['emotion']['label'])  # joy
+
+# Batch prediction
+results = service.predict_batch(["text1", "text2", "text3"])
+```
+
+## 📁 Cấu trúc Project
+
+```
+DeepText-MTL/
+├── ui_app/                    # Streamlit UI Application
+│   ├── app.py                 # Main UI app
+│   ├── model_service.py       # Model service layer
+│   └── requirements.txt       # UI dependencies
+│
+├── src/                       # Source code
+│   ├── model/                 # Model architectures
+│   ├── training/              # Training pipeline
+│   ├── data_preprocessing/    # Data preprocessing
+│   └── utils/                 # Utilities
+│
+├── checkpoints/               # Model checkpoints
+│   └── models/
+│       └── best_model_20251027_085402.h5
+│
+├── data/                      # Datasets
+│   ├── raw/                   # Raw data
+│   └── processed/             # Processed data
+│
+├── config_default.json        # Configuration
+└── requirements.txt           # Dependencies
+```
+
+## 🏗️ Model Architecture
+
+```
+Input Text (max_length=100)
+        ↓
+Shared Embedding (vocab_size=10,000 → embedding_dim=128)
+        ↓
+Shared BiLSTM (64 units)
+        ↓
+Shared Dense (128 units) + Dropout
+        ↓
+┌─────────────┬─────────────┬─────────────┐
+│ Emotion     │ Hate Speech │ Violence    │
+│ (7 classes) │ (3 classes) │ (3 classes) │
+│ Softmax     │ Softmax     │ Softmax     │
+└─────────────┴─────────────┴─────────────┘
+```
+
+### Task Classes
+
+**Emotion (7 classes):**
+- sad, joy, love, angry, fear, surprise, no_emo
+
+**Hate Speech (3 classes):**
+- hate, offensive, neutral
+
+**Violence (3 classes):**
+- sex_viol, phys_viol, no_viol
+
+## 📊 Training
+
+### Train Model
+
+```python
+from src.model.deeptext_multitask import DeepTextMultiTaskClassifier
+
+# Tạo model
+model = DeepTextMultiTaskClassifier(
+    vocab_size=10000,
+    embedding_dim=128,
+    lstm_units=64,
+    max_length=100,
+    dropout_rate=0.3
+)
+
+# Build và compile
 model.build_model()
 model.compile_model()
 
 # Train
-pipeline = TrainingPipeline(model.model, data)
-pipeline.train(epochs=50, batch_size=32)
-```
-
-### Model Evaluation
-
-```python
-from src.training.evaluate import ModelEvaluator
-
-# Load model and data
-evaluator = ModelEvaluator(model, data)
-
-# Evaluate
-results = evaluator.evaluate_model()
-
-# Generate plots
-evaluator.plot_confusion_matrices()
-evaluator.plot_roc_curves()
-evaluator.plot_precision_recall_curves()
-```
-
-### Custom Configuration
-
-```python
-from src.utils.config import Config, ModelConfig
-
-# Create custom configuration
-config = Config(
-    model_config=ModelConfig(
-        vocab_size=20000,
-        max_length=150,
-        embedding_dim=256,
-        lstm_units=128,
-        use_attention=True
-    )
+history = model.train(
+    X_train, y_train,
+    X_val, y_val,
+    epochs=50,
+    batch_size=32
 )
-
-# Use in training
-pipeline = TrainingPipeline(model.model, data, config=config)
 ```
 
-## 🎯 Model Architecture
+### Evaluate Model
 
-### Overview
+```python
+# Evaluate
+results = model.evaluate(X_test, y_test)
 
-```
-Input Text (max_length)
-        ↓
-Shared Embedding (vocab_size → embedding_dim)
-        ↓
-Shared BiLSTM (lstm_units)
-        ↓
-Multi-Head Attention (8 heads)
-        ↓
-Global Max Pooling
-        ↓
-Shared Dense + BatchNorm + Dropout
-        ↓
-┌─────────────┬─────────────┬─────────────┐
-│ Emotion     │ Hate Speech │ Violence    │
-│ (64→7)      │ (32→3)      │ (32→3)      │
-│ Softmax     │ Sigmoid     │ Sigmoid     │
-└─────────────┴─────────────┴─────────────┘
+# Visualize training
+model.plot_training_history()
 ```
 
-### Key Features
+## 🌐 Deploy Streamlit Cloud
 
-- **Shared Embedding**: Efficient feature extraction
-- **BiLSTM**: Captures bidirectional context
-- **Attention Mechanism**: Focuses on important words
-- **Batch Normalization**: Stabilizes training
-- **Multi-Task Heads**: Specialized classification layers
-- **Sigmoid Activation**: Supports multi-label classification
+### Bước 1: Push lên GitHub
+
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
+
+### Bước 2: Deploy trên Streamlit Cloud
+
+1. Vào: https://streamlit.io/cloud
+2. Đăng nhập với GitHub
+3. Click "New app"
+4. Chọn repo → Main file: `ui_app/app.py`
+5. Click "Deploy"
+6. ✅ Nhận link công khai!
+
+**Link sẽ có dạng:** `https://your-app-name.streamlit.app`
+
+## ⚙️ Configuration
+
+### Model Config (`config_default.json`)
+
+```json
+{
+  "model": {
+    "vocab_size": 10000,
+    "max_length": 100,
+    "embedding_dim": 128,
+    "lstm_units": 64,
+    "dropout_rate": 0.3
+  }
+}
+```
 
 ## 📈 Performance
 
-### Model Metrics
+Model đã được train và đạt performance tốt trên validation set:
+- **Emotion Classification**: Accuracy cao
+- **Hate Speech Detection**: F1-score tốt
+- **Violence Detection**: Precision và Recall cân bằng
 
-| Task | Accuracy | F1-Score | Precision | Recall |
-|------|----------|----------|-----------|--------|
-| Emotion | 0.85 | 0.83 | 0.84 | 0.82 |
-| Hate Speech | 0.92 | 0.90 | 0.91 | 0.89 |
-| Violence | 0.88 | 0.86 | 0.87 | 0.85 |
+## 🔧 Requirements
 
-### Training Features
+### Core Dependencies
+- Python 3.8+
+- TensorFlow 2.8+
+- Pandas, NumPy
+- Scikit-learn
 
-- **Class Weight Balancing**: Handles imbalanced datasets
-- **Early Stopping**: Prevents overfitting
-- **Learning Rate Scheduling**: Adaptive learning
-- **Model Checkpointing**: Saves best models
-- **Comprehensive Logging**: Tracks training progress
+### UI Dependencies
+- Streamlit >= 1.28.0
+- Plotly >= 5.0.0
 
-## 🔧 Configuration
+Xem `requirements.txt` và `ui_app/requirements.txt` để biết chi tiết.
 
-### Model Parameters
+## 📝 Usage Examples
 
-```python
-model_config = {
-    'vocab_size': 10000,           # Vocabulary size
-    'max_length': 100,             # Maximum sequence length
-    'embedding_dim': 128,          # Embedding dimension
-    'lstm_units': 64,              # LSTM units
-    'dropout_rate': 0.3,           # Dropout rate
-    'use_attention': True,         # Enable attention
-    'use_batch_norm': True,        # Enable batch normalization
-    'use_pretrained_embedding': False  # Use pretrained embeddings
-}
-```
-
-### Training Parameters
+### Single Prediction
 
 ```python
-training_config = {
-    'epochs': 100,                 # Number of epochs
-    'batch_size': 32,              # Batch size
-    'learning_rate': 0.001,        # Learning rate
-    'validation_split': 0.1,       # Validation split
-    'early_stopping_patience': 10, # Early stopping patience
-    'reduce_lr_patience': 5        # Learning rate reduction patience
-}
+from ui_app.model_service import get_model_service
+
+service = get_model_service(
+    model_path="checkpoints/models/best_model_20251027_085402.h5",
+    train_data_path="checkpoints/train_clean.csv"
+)
+
+result = service.predict("Tôi cảm thấy rất vui vẻ hôm nay!")
+
+print(f"Emotion: {result['emotion']['label']}")
+print(f"Confidence: {result['emotion']['confidence']:.2%}")
+print(f"Hate: {result['hate']['labels']}")
+print(f"Violence: {result['violence']['labels']}")
 ```
 
-## 📊 Visualization
-
-The system provides comprehensive visualizations:
-
-- **Training Progress**: Loss and accuracy curves
-- **Confusion Matrices**: Per-task classification results
-- **ROC Curves**: Multi-class ROC analysis
-- **Precision-Recall Curves**: Detailed performance analysis
-- **Data Distribution**: Class balance visualization
-- **Learning Curves**: Smoothed training progress
-
-## 🚀 Advanced Usage
-
-### Custom Metrics
+### Batch Prediction
 
 ```python
-from src.utils.metrics_utils import MetricsCalculator
+texts = [
+    "Tôi cảm thấy rất vui vẻ!",
+    "Đây là một tin nhắn tức giận",
+    "Tôi yêu bạn rất nhiều"
+]
 
-calculator = MetricsCalculator()
-metrics = calculator.calculate_all_metrics(y_true, y_pred, "emotion")
+results = service.predict_batch(texts)
+for r in results:
+    print(f"Text: {r['text']}")
+    print(f"Emotion: {r['emotion']['label']}")
 ```
 
-### Custom Visualizations
+## 🎯 Workflow
 
-```python
-from src.utils.plotting_utils import PlottingUtils
+1. **Data Preparation**: Chuẩn bị dataset với format đúng
+2. **Training**: Train model với dữ liệu
+3. **Evaluation**: Đánh giá performance
+4. **Deployment**: Deploy lên Streamlit Cloud
+5. **Usage**: Sử dụng qua UI hoặc API
 
-plotter = PlottingUtils()
-plotter.plot_confusion_matrix_heatmap(cm, class_names)
-plotter.create_dashboard(history, data, results)
-```
+## 📚 Documentation
 
-### Hyperparameter Tuning
-
-```python
-# Use the experiments notebook
-jupyter notebook notebooks/03_train_experiments.ipynb
-```
-
-## 📝 API Reference
-
-### Main Classes
-
-- `DeepTextMultiTaskClassifierOptimized`: Main model class
-- `TrainingPipeline`: Complete training pipeline
-- `ModelEvaluator`: Model evaluation utilities
-- `TextPreprocessor`: Text preprocessing utilities
-- `MetricsCalculator`: Custom metrics calculation
-- `PlottingUtils`: Advanced visualization utilities
-
-### Key Methods
-
-- `build_model()`: Build model architecture
-- `compile_model()`: Compile with optimizers and losses
-- `train()`: Train the model
-- `evaluate()`: Evaluate model performance
-- `predict()`: Make predictions
-- `plot_training_history()`: Visualize training progress
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- TensorFlow/Keras team for the deep learning framework
-- The open-source community for various utilities
-- Contributors and users for feedback and improvements
-
-## 📞 Support
-
-For questions, issues, or contributions:
-
-- Create an issue on GitHub
-- Contact the development team
-- Check the documentation
+- **UI Workflow**: Xem `ui_app/WORKFLOW.md`
+- **Deployment Guide**: Xem `ui_app/DEPLOY.md`
+- **Troubleshooting**: Xem `ui_app/TROUBLESHOOTING.md`
 
 ---
 
-**DeepText Multi-Task Learning System** - Advanced text classification for Vietnamese language understanding.
-
-
-
-
-
-
-
-
-
-
-
+**DeepText Multi-Task Learning** - Phân tích văn bản tiếng Việt với Multi-Task Learning
