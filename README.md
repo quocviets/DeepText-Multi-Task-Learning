@@ -1,6 +1,6 @@
 # DeepText Multi-Task Learning
 
-Hệ thống Deep Learning để phân tích văn bản tiếng Việt với 3 nhiệm vụ đồng thời:
+Hệ thống Deep Learning để phân tích văn bản tiếng Anh với 3 nhiệm vụ đồng thời:
 - **🎭 Phân loại cảm xúc** (7 classes)
 - **😡 Phát hiện ngôn từ thù địch** (3 classes)
 - **⚔️ Phát hiện bạo lực** (3 classes)
@@ -267,4 +267,4 @@ for r in results:
 
 ---
 
-**DeepText Multi-Task Learning** - Phân tích văn bản tiếng Việt với Multi-Task Learning
+**DeepText Multi-Task Learning** - Phân tích văn bản tiếng Anh với Multi-Task Learning
