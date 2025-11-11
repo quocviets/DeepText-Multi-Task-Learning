@@ -31,10 +31,25 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     /* Global Styles */
-    * {
-        font-family: 'Inter', sans-serif;
+    * { font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; }
+
+    /* MULTI-COLOR BACKGROUND (applied to all main wrappers) */
+    html, body, .stApp, [data-testid="stAppViewContainer"] {
+        /* Layered gradients for vibrant, multi-color look */
+        background:
+            radial-gradient(40% 35% at 10% 5%, rgba(99,102,241,0.25) 0%, rgba(99,102,241,0) 60%),
+            radial-gradient(45% 40% at 85% 0%, rgba(244,114,182,0.25) 0%, rgba(244,114,182,0) 60%),
+            radial-gradient(60% 55% at 50% 100%, rgba(251,146,60,0.22) 0%, rgba(251,146,60,0) 60%),
+            radial-gradient(50% 45% at 0% 60%, rgba(16,185,129,0.20) 0%, rgba(16,185,129,0) 60%),
+            linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+        background-attachment: fixed;
+        backdrop-filter: none;
     }
     
+    /* Make content cards float over gradient (no white fill) */
+    .main .block-container { background: transparent; }
+
     /* Main Header */
     .main-header {
         font-size: 3rem;
@@ -50,20 +65,23 @@ st.markdown("""
     
     .sub-header {
         font-size: 1.3rem;
-        color: #64748b;
+        color: #475569;
         text-align: center;
         margin-bottom: 2.5rem;
         font-weight: 400;
     }
     
     /* Sidebar Styling */
-    .css-1d391kg {
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, rgba(248,250,252,0.95) 0%, rgba(241,245,249,0.95) 100%);
+        backdrop-filter: blur(8px);
+        border-right: 1px solid #e2e8f0;
+        padding: 1.25rem 1rem;
     }
     
     /* Cards & Boxes */
     .prediction-box {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
         padding: 1.5rem;
         border-radius: 1rem;
         margin: 1rem 0;
@@ -72,7 +90,7 @@ st.markdown("""
     }
     
     .metric-card {
-        background: white;
+        background: rgba(255,255,255,0.95);
         padding: 1.5rem;
         border-radius: 0.75rem;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -80,121 +98,35 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         transition: all 0.3s ease;
     }
-    
-    .metric-card:hover {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transform: translateY(-2px);
-    }
-    
+    .metric-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05); }
+
     /* Buttons */
     .stButton > button {
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 0.5rem;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 0.5rem 0.5rem 0 0;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-    }
-    
-    /* Text Input */
-    .stTextInput > div > div > input {
-        border-radius: 0.5rem;
-        border: 2px solid #e2e8f0;
-        transition: all 0.3s ease;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    /* Text Area */
-    .stTextArea > div > div > textarea {
-        border-radius: 0.5rem;
-        border: 2px solid #e2e8f0;
-    }
-    
-    /* Success/Error Messages */
-    .stAlert {
-        border-radius: 0.75rem;
-        border-left: 4px solid;
-    }
-    
-    /* Metrics */
-    [data-testid="stMetricValue"] {
-        font-size: 2rem;
+        border-radius: 0.65rem;
         font-weight: 700;
+        transition: all 0.25s ease;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #ffffff; letter-spacing: 0.2px;
     }
-    
-    [data-testid="stMetricLabel"] {
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #64748b;
-    }
-    
-    /* Sidebar */
-    .css-1d391kg {
-        padding: 1.5rem;
-    }
-    
-    /* Main Container */
-    .main .block-container {
-        padding-top: 3rem;
-        padding-bottom: 3rem;
-    }
-    
-    /* Hide Streamlit Branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-    
-    /* Animation */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .fade-in {
-        animation: fadeIn 0.5s ease-in;
-    }
+    .stButton > button:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,.1); filter: brightness(1.03); }
+
+    /* Sidebar buttons equal size */
+    [data-testid="stSidebar"] .stButton > button { width: 100% !important; height: 48px; padding: 0 16px; margin-bottom: 12px; display: inline-flex; align-items: center; justify-content: center; }
+
+    /* Inputs */
+    .stTextInput > div > div > input, .stTextArea > div > div > textarea { border-radius: 0.5rem; border: 2px solid #e2e8f0; background: #ffffff; transition: all .3s ease; }
+    .stTextInput > div > div > input:focus, .stTextArea > div > div > textarea:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,.1); }
+
+    /* Alerts */
+    .stAlert { border-radius: 0.75rem; border-left: 4px solid; }
+
+    /* Metrics */
+    [data-testid="stMetricValue"] { font-size: 2rem; font-weight: 700; }
+    [data-testid="stMetricLabel"] { font-size: .9rem; font-weight: 500; color: #64748b; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -389,7 +321,7 @@ def main():
                 st.session_state.model_loaded = False
                 st.session_state.model_service = None
                 # Reset singleton
-                from ui_app.model_service import reset_model_service
+                from model_service import reset_model_service
                 reset_model_service()
                 st.rerun()
     
